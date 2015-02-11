@@ -54,13 +54,13 @@ dbListTables(con)
 ```{r}
 c <- tbl(db, 'car')
 head(c, 2)
-
 ```
 ----
 ### RMySQL
 ```{r}
 c <- dbReadTable(con, 'car')
 head(c, 2)
+dbDisconnect(con)
 ```
 ## Creating a table
 ### dplyr
@@ -79,5 +79,19 @@ dbWriteTable(con, 'car', mtcars)
 iris2 <- iris
 dbWriteTable(con, 'data2', iris2, row.names = FALSE, append = TRUE)
 ```
-
-
+## Working with database and dplyr
+```{r}
+db
+df <- tbl(db, 'car')
+head(df, 2)
+```
+##
+```{r}
+cyl <- df %>% group_by(cyl) %>% summarise(count = n(), avgwt = mean(wt))
+head(cyl)
+```
+The evaluation of the query happens only when calling cyl, not before. 
+The result of the query is NOT stored in the memory by default, if you want to use the data returned and avoid to rerun the query, use collect().
+```{r}
+cyl <- df %>% group_by(cyl) %>% summarise(count = n(), avgwt = mean(wt))
+cyl <- collect(cyl)
