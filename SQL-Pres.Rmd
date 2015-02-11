@@ -2,28 +2,82 @@
 title: "SQL Introduction"
 author: "Sylvie, Dan, and Alex"
 date: "February 11, 2015"
-output: ioslides_presentation
+output:
+  ioslides_presentation:
+    highlight: pygments
+    widescreen: yes
 ---
 
 ## R Markdown
 
-This is an R Markdown presentation. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
+We need some intro here!
 
 ## Visualizing SQL Tables
 
 ![](sqlvisualization.png)
 
-## Slide with R Code and Output
+## Create a local database
 
+- Install Mamp (Mac), Wamp (Windows) or lamp (linux)
+- Start the server
+- Create a new database (here called iris)
+
+## Packages
+### dplyr
+```{r message = FALSE}
+library(dplyr)
+```
+
+### RMySQL
+```{r message = FALSE}
+library(RMySQL)
+```
+To install RMySQL on windows tou first need to install RTools and then follow the instruction there: http://passionfordata.blogspot.com/2012/04/how-to-install-r-and-rmysql-package.html
+
+## Connecting to a database
+### dplyr
 ```{r}
-summary(cars)
+db <- src_mysql(dbname = 'iris', host = '127.0.0.1', user="root", password="")
+db
+```
+### RMySQL
+```{r}
+drv <- dbDriver("MySQL")
+con <- dbConnect(drv, host = '127.0.0.1', user="root", password="", dbname = 'iris')
+
+dbListTables(con)
+
 ```
 
-## Slide with Plot
+## Read a table
+### dplyr
+```{r}
+c <- tbl(db, 'car')
+head(c, 2)
 
-```{r, echo=FALSE}
-plot(cars)
 ```
+----
+### RMySQL
+```{r}
+c <- dbReadTable(con, 'car')
+head(c, 2)
+```
+## Creating a table
+### dplyr
+```{r eval = FALSE}
+iris <- tbl_df(iris)
+copy_to(db, iris, name = 'data2', temporary = FALSE)
+```
+### RMySQL
+```{r eval = FALSE}
+dbWriteTable(con, 'car', mtcars)
+```
+
+## Appending a table
+### Can only do that with RMySQL
+```{r, eval=FALSE}
+iris2 <- iris
+dbWriteTable(con, 'data2', iris2, row.names = FALSE, append = TRUE)
+```
+
 
