@@ -85,13 +85,16 @@ db
 df <- tbl(db, 'car')
 head(df, 2)
 ```
-##
+## Working with database and dplyr II
 ```{r}
 cyl <- df %>% group_by(cyl) %>% summarise(count = n(), avgwt = mean(wt))
+explain(cyl)
 head(cyl)
 ```
+## Working with database and dplyr III
 The evaluation of the query happens only when calling cyl, not before. 
 The result of the query is NOT stored in the memory by default, if you want to use the data returned and avoid to rerun the query, use collect().
 ```{r}
 cyl <- df %>% group_by(cyl) %>% summarise(count = n(), avgwt = mean(wt))
 cyl <- collect(cyl)
+head(cyl)
